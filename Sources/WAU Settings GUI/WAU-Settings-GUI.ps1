@@ -4040,19 +4040,23 @@ function Test-SettingsChanged {
             if ($savedMaxLogSize -ne $guiMaxLogSize) { $changes += "Max Log Size" }
 
             # Update Deadline settings
+            # Treat missing registry values as WAU defaults to avoid false change detection on new installations
             $savedDeadlineDays = Get-DisplayValue "WAU_UpdateDeadlineDays" $currentConfig $policies
+            if ($null -eq $savedDeadlineDays) { $savedDeadlineDays = "0" }
             $guiDeadlineDays = $controls.UpdateDeadlineDaysComboBox.SelectedItem.Content
             if ($savedDeadlineDays -ne $guiDeadlineDays) { $changes += "Update Deadline Days" }
 
             # Only compare deadline-dependent values when the feature is active (mirrors Save-WAUSettings logic)
             if ([int]$guiDeadlineDays -gt 0) {
                 $savedReminderDays = Get-DisplayValue "WAU_ReminderIntervalDays" $currentConfig $policies
+                if ($null -eq $savedReminderDays) { $savedReminderDays = 2 }
                 $guiReminderDays = if ($controls.ReminderIntervalDaysComboBox.SelectedItem) {
                     [int]$controls.ReminderIntervalDaysComboBox.SelectedItem.Content
                 } else { 2 }
                 if ($savedReminderDays -ne $guiReminderDays) { $changes += "Reminder Interval Days" }
 
                 $savedCompanyName = Get-DisplayValue "WAU_CompanyName" $currentConfig $policies
+                if ($null -eq $savedCompanyName) { $savedCompanyName = "" }
                 $guiCompanyName = $controls.CompanyNameTextBox.Text
                 if ($savedCompanyName -ne $guiCompanyName) { $changes += "Company Name" }
             }
