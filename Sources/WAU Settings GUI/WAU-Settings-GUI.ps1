@@ -4146,6 +4146,7 @@ function Save-WAUSettings {
             [System.Windows.Forms.Application]::DoEvents()
             
             # Prepare settings hashtable
+            $deadlineDays = [int]$controls.UpdateDeadlineDaysComboBox.SelectedItem.Content
             $newSettings = @{
                 WAU_UpdatesInterval = $controls.UpdateIntervalComboBox.SelectedItem.Tag
                 WAU_NotificationLevel = $controls.NotificationLevelComboBox.SelectedItem.Tag
@@ -4166,11 +4167,14 @@ function Save-WAUSettings {
                 WAU_UseWhiteList = if ($controls.UseWhiteListCheckBox.IsChecked) { 1 } else { 0 }
                 WAU_MaxLogFiles = $controls.MaxLogFilesComboBox.SelectedItem.Content
                 WAU_MaxLogSize = if ($controls.MaxLogSizeComboBox.SelectedItem -and $controls.MaxLogSizeComboBox.SelectedItem.Tag) { $controls.MaxLogSizeComboBox.SelectedItem.Tag } else { $controls.MaxLogSizeComboBox.Text }
-                WAU_UpdateDeadlineDays = [int]$controls.UpdateDeadlineDaysComboBox.SelectedItem.Content
-                WAU_ReminderIntervalDays = if ($controls.ReminderIntervalDaysComboBox.SelectedItem) {
+                WAU_UpdateDeadlineDays = $deadlineDays
+            }
+            # Only save deadline-dependent settings when the feature is active
+            if ($deadlineDays -gt 0) {
+                $newSettings.WAU_ReminderIntervalDays = if ($controls.ReminderIntervalDaysComboBox.SelectedItem) {
                     [int]$controls.ReminderIntervalDaysComboBox.SelectedItem.Content
                 } else { 2 }
-                WAU_CompanyName = $controls.CompanyNameTextBox.Text
+                $newSettings.WAU_CompanyName = $controls.CompanyNameTextBox.Text
             }
 
             # Save settings
