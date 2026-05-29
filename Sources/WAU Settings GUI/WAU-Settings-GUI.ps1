@@ -4044,15 +4044,18 @@ function Test-SettingsChanged {
             $guiDeadlineDays = $controls.UpdateDeadlineDaysComboBox.SelectedItem.Content
             if ($savedDeadlineDays -ne $guiDeadlineDays) { $changes += "Update Deadline Days" }
 
-            $savedReminderDays = Get-DisplayValue "WAU_ReminderIntervalDays" $currentConfig $policies
-            $guiReminderDays = if ($controls.ReminderIntervalDaysComboBox.SelectedItem) {
-                [int]$controls.ReminderIntervalDaysComboBox.SelectedItem.Content
-            } else { 2 }
-            if ($savedReminderDays -ne $guiReminderDays) { $changes += "Reminder Interval Days" }
+            # Only compare deadline-dependent values when the feature is active (mirrors Save-WAUSettings logic)
+            if ([int]$guiDeadlineDays -gt 0) {
+                $savedReminderDays = Get-DisplayValue "WAU_ReminderIntervalDays" $currentConfig $policies
+                $guiReminderDays = if ($controls.ReminderIntervalDaysComboBox.SelectedItem) {
+                    [int]$controls.ReminderIntervalDaysComboBox.SelectedItem.Content
+                } else { 2 }
+                if ($savedReminderDays -ne $guiReminderDays) { $changes += "Reminder Interval Days" }
 
-            $savedCompanyName = Get-DisplayValue "WAU_CompanyName" $currentConfig $policies
-            $guiCompanyName = $controls.CompanyNameTextBox.Text
-            if ($savedCompanyName -ne $guiCompanyName) { $changes += "Company Name" }
+                $savedCompanyName = Get-DisplayValue "WAU_CompanyName" $currentConfig $policies
+                $guiCompanyName = $controls.CompanyNameTextBox.Text
+                if ($savedCompanyName -ne $guiCompanyName) { $changes += "Company Name" }
+            }
         }
 
         return @{
