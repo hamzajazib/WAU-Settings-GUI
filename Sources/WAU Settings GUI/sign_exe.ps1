@@ -1,6 +1,6 @@
 param([Parameter(Mandatory)]$ExePath)
 
-$certSHA1 = "349C0D33B7934F917AA0A36B1340A288AB56179E"
+$certSHA1 = "ef97746869f9869602b50572ebbca8e9d5fd5c7c"  # SHA1 hash of the certificate used for signing
 $timestampUrl = "http://timestamp.digicert.com" 
 $signtool = (Get-ChildItem -Path "${env:ProgramFiles(x86)}\Windows Kits\10\bin\" -Filter signtool.exe -Recurse | 
     Where-Object { $_.FullName -match "\\x64\\" } |
